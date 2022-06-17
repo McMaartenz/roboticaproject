@@ -242,35 +242,44 @@ void CheckVooruit(int richting, bool doorgaan) {
   }
 }
 
+//////////////
+unsigned long milliTracker = 0;
 
 //// LOOP ////
 //////////////
 void loop() {
+  unsigned long currentMillis = Millis();
   detectState();
   if (Status == VOORUIT) {
+    milliTracker = currentMillis;
     Vooruit(5);
   }
   else if (Status == bLINKS) {
+    milliTracker = currentMillis;
     delay(100);
     CheckVooruit(0, false);
   }
   else if (Status == bRECHTS) {
+    milliTracker = currentMillis;
     delay(100);
     CheckVooruit(1, true);
   }
   else if (Status == correctieNaarLINKS) {
+    milliTracker = currentMillis;
     delay(100);
     CorrectieLinks(100, true);
   }
   else if (Status == correctieNaarRECHTS) {
+    milliTracker = currentMillis;
     delay(100);
     CorrectieRechts(100, true);
   }
   else if (Status == KRUISING) {
+    milliTracker = currentMillis;
     delay(100);
     CheckVooruit(0, false);
   }
-  else if (Status == NIETS) {
+  else if (Status == NIETS && currentMillis - milliTracker > 300) {
     Rechtsaf(0, true);
   }
 
