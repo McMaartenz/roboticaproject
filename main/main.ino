@@ -1,4 +1,4 @@
-#define CONVERSIE 60
+#define CONVERSIE 64
 
 int directionPin_L = 4;
 int pwmPin_L = 5;
