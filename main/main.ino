@@ -281,7 +281,7 @@ void loop() {
     delay(100);
     CheckVooruit(0, false);
   }
-  else if (Status == NIETS && currentMillis - milliTracker > 300) {
+  else if (Status == NIETS && ((currentMillis - milliTracker) > 300)) {
     Rechtsaf(0, true);
   }
 
