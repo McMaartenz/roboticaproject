@@ -27,8 +27,6 @@ bool SensorM;
 bool SensorMR;
 bool SensorFR;
 
-int junctions;
-
 // display
 int NUMBERS[] =
 {
