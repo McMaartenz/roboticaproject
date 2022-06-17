@@ -142,10 +142,10 @@ void Linksaf(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
       while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
-      Rechterwiel_Vooruit();
-      Linkerwiel_Achteruit();
-      neutralise();
-    }
+        Rechterwiel_Vooruit();
+        Linkerwiel_Achteruit();
+        neutralise();
+      }
   } else {
     while (millis() < turnTimeout) {
       Rechterwiel_Vooruit();
@@ -177,15 +177,15 @@ void Rechtsaf(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
-    Rechterwiel_Achteruit();
-    Linkerwiel_Vooruit();
-    neutralise();
+      Rechterwiel_Achteruit();
+      Linkerwiel_Vooruit();
+      neutralise();
     }
   } else {
     while (millis() < turnTimeout) {
-    Rechterwiel_Achteruit();
-    Linkerwiel_Vooruit();
-    neutralise();
+      Rechterwiel_Achteruit();
+      Linkerwiel_Vooruit();
+      neutralise();
     }
   }
   Remmen(true, true);
@@ -195,15 +195,15 @@ void CorrectieRechts(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
-    Remmen(false, true);
-    Linkerwiel_Vooruit();
-    neutralise();
+      Remmen(false, true);
+      Linkerwiel_Vooruit();
+      neutralise();
     }
   } else {
     while (millis() < turnTimeout) {
-    Remmen(false, true);
-    Linkerwiel_Vooruit();
-    neutralise();
+      Remmen(false, true);
+      Linkerwiel_Vooruit();
+      neutralise();
     }
   }
   Remmen(true, true);
