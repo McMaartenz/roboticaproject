@@ -44,8 +44,8 @@ int NUMBERS[] =
 
 int LETTERS[] =
 {
-    0b00001110, // L
-    0b11001110  // R
+    0b0001110, // L
+    0b1100110  // R
 };
 
 // status & tracking
@@ -85,9 +85,14 @@ void setup() {
     {
       writeNumber(NUMBERS[i], false);
       sleep(250);
+      writeNumber(NUMBERS[i], true);
+      sleep(250);
     }
+    writeNumber(LETTERS[0], true);
+    sleep(1000);
+    writeNumber(LETTERS[1], false);
+    sleep(1000);
   }
-  writeNumber(LETTERS[1], false);
 }
 
 // FUNCTIES //
@@ -180,6 +185,7 @@ void Achteruit(int timeout) {
 }
 
 void Linksaf(int timeout, bool checkSensor) {
+  writeNumber(LETTERS[0], true);
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
       while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -195,6 +201,7 @@ void Linksaf(int timeout, bool checkSensor) {
     }
   }
   Remmen(true, true);
+  clearDisplay(true);
 }
 void CorrectieLinks(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
@@ -215,6 +222,7 @@ void CorrectieLinks(int timeout, bool checkSensor) {
 }
 
 void Rechtsaf(int timeout, bool checkSensor) {
+  writeNumber(LETTERS[1], true);
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -230,6 +238,7 @@ void Rechtsaf(int timeout, bool checkSensor) {
     }
   }
   Remmen(true, true);
+  clearDisplay(true);
 }
 
 void CorrectieRechts(int timeout, bool checkSensor) {

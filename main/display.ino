@@ -57,4 +57,9 @@ void writeNumber(int toDisplay, boolean firstDisplay)
   digitalWrite(DG, (toDisplay >> 0) & 1);
 }
 
+void clearDisplay(boolean firstDisplay)
+{
+    writeNumber(0, firstDisplay);
+}
+
 #endif
