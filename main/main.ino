@@ -221,7 +221,7 @@ void CheckVooruit(int richting, bool doorgaan) {
   Remmen(true, true);
   detectState();
   if (Status == KRUISING) {
-    Vooruit(1000);
+    delay(1000);
     Remmen(true, true);
     detectState();
     if (Status == KRUISING) {
@@ -250,7 +250,7 @@ unsigned long milliTracker = 0;
 //// LOOP ////
 //////////////
 void loop() {
-  unsigned long currentMillis = Millis();
+  unsigned long currentMillis = millis();
   detectState();
   if (Status == VOORUIT) {
     milliTracker = currentMillis;
