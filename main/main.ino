@@ -67,44 +67,37 @@ void detectState() {
   neutralise();
   if (SensorFL && SensorML && !SensorM && SensorMR && SensorFR) {
       Status = VOORUIT;
-      Serial.println(Status);
   }
   else if (!SensorFL && !SensorML && !SensorM && SensorMR && SensorFR) {
       Status = bLINKS;
-      Serial.println(Status);
   }
   else if (SensorFL && SensorML && !SensorM && !SensorMR && !SensorFR) {
       Status = bRECHTS;
-      Serial.println(Status);
   }
   else if (!SensorFL && !SensorML && !SensorM && !SensorMR && !SensorFR) {
       Status = KRUISING;
-      Serial.println(Status);
   }
   else if (SensorFL && SensorML && !SensorM && !SensorMR && SensorFR) {
       Status = correctieNaarRECHTS;
-      Serial.println(Status);
   }
   else if (SensorFL && SensorML && SensorM && !SensorMR && SensorFR) {
       Status = correctieNaarRECHTS;
-      Serial.println(Status);
   }
   else if (SensorFL && !SensorML && !SensorM && SensorMR && SensorFR) {
       Status = correctieNaarLINKS;
-      Serial.println(Status);
   }
   else if (SensorFL && !SensorML && SensorM && SensorMR && SensorFR) {
       Status = correctieNaarLINKS;
-      Serial.println(Status);
   }
   else if (SensorFL && SensorML && SensorM && SensorMR && SensorFR) {
       Status = NIETS;
-      Serial.println(Status);
   }
   // else {
   //     Status = NIETS;
   //     Serial.println(Status);
   // }
+  
+  Serial.println(status);
 }
 
 //// WIELEN ///
