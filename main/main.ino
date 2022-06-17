@@ -224,6 +224,7 @@ void CorrectieLinks(int timeout, bool checkSensor) {
 }
 
 void Rechtsaf(int timeout, bool checkSensor) {
+  writeNumber(LETTERS[1], true);
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -239,6 +240,7 @@ void Rechtsaf(int timeout, bool checkSensor) {
     }
   }
   Remmen(true, true);
+  clearDisplay(true);
 }
 
 void CorrectieRechts(int timeout, bool checkSensor) {
