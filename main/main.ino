@@ -222,13 +222,23 @@ void CheckVooruit(int richting, bool doorgaan) {
   Vooruit(300);
   Remmen(true, true);
   detectState();
-  if (Status == KRUISING) {
-    while (true) {
+  neutralise();
+  if (!SensorFL && !SensorML && !SensorM && !SensorMR && !SensorFR) {
+    Vooruit(300);
+    Remmen(true, true);
+    neutralise();
+    if (!SensorFL && !SensorML && !SensorM && !SensorMR && !SensorFR) {
       digitalWrite(13, HIGH);
-      delay(1000);
-      digitalWrite(13, HIGH);
-      delay(1000);
+      while (true);
     }
+    // while (true) {
+    //   for (int i = 1; i < 10; i++) {
+    //   digitalWrite(13, HIGH);
+    //   delay(1000);
+    //   digitalWrite(13, HIGH);
+    //   delay(1000);
+    //   }
+    // }
   } else {
     if (Status == NIETS || !doorgaan) {
       Achteruit(350);
@@ -281,8 +291,8 @@ void loop() {
     delay(100);
     CheckVooruit(0, false);
   }
-  else if (Status == NIETS && ((currentMillis - milliTracker) > 300)) {
-    Rechtsaf(0, true);
+  else if (Status == NIETS && ((currentMillis - milliTracker) > 500)) {
+    CorrectieRechts(0, true);
   }
 
 }
