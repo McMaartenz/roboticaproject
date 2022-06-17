@@ -45,6 +45,8 @@ void setup() {
   pinMode(SensorMR_pin, INPUT);
   pinMode(SensorFR_pin, INPUT);
 
+  pinMode(13, OUTPUT);
+
   display_setup();
 
   TCCR0B = 1;
@@ -221,13 +223,11 @@ void CheckVooruit(int richting, bool doorgaan) {
   Remmen(true, true);
   detectState();
   if (Status == KRUISING) {
-    delay(1000);
-    Remmen(true, true);
-    detectState();
-    if (Status == KRUISING) {
-      while (true) {}
-    } else {
-      Status = NIETS;
+    while (true) {
+      digitalWrite(13, HIGH);
+      delay(1000);
+      digitalWrite(13, HIGH);
+      delay(1000);
     }
   } else {
     if (Status == NIETS || !doorgaan) {
