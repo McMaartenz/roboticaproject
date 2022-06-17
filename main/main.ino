@@ -45,6 +45,8 @@ void setup() {
   pinMode(SensorMR_pin, INPUT);
   pinMode(SensorFR_pin, INPUT);
 
+  display_setup();
+
   TCCR0B = 1;
   Serial.begin(9600);
 }
