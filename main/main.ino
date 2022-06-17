@@ -199,10 +199,10 @@ void Linksaf(int timeout, bool checkSensor) {
 void CorrectieLinks(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
-      while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
+      while (!(Status == VOORUIT) || !(Status == bLINKS) || !(Status == bRECHTS) || millis() < turnTimeout) {
       Rechterwiel_Vooruit();
       Remmen(true, false);
-      neutralise();
+      detectState;
     }
   } else {
     while (millis() < turnTimeout) {
@@ -235,10 +235,10 @@ void Rechtsaf(int timeout, bool checkSensor) {
 void CorrectieRechts(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
-    while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
+    while (!(Status == VOORUIT) || !(Status == bLINKS) || !(Status == bRECHTS) || millis() < turnTimeout) {
       Remmen(false, true);
       Linkerwiel_Vooruit();
-      neutralise();
+      detectState();
     }
   } else {
     while (millis() < turnTimeout) {
@@ -267,7 +267,7 @@ void CheckVooruit(int richting, bool doorgaan) {
     }
   } else {
     if (Status == NIETS || !doorgaan) {
-      Achteruit(350);
+      Achteruit(200);
       Remmen(true, true);
       if (richting == 0) {
         Linksaf(600, false);
