@@ -79,13 +79,13 @@ void setup() {
     for(int i = 0; i < 10; i++)
     {
       writeNumber(NUMBERS[i], false);
-      slaap(250);
+      sleep(250);
     }
   }
   writeNumber(LETTERS[1], false);
 }
 
-void slaap(unsigned long ms)
+void sleep(unsigned long ms)
 {
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
   while(expirationTime >= millis());
