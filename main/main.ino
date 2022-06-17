@@ -1,3 +1,5 @@
+#define CONVERSIE 60
+
 int directionPin_L = 4;
 int pwmPin_L = 5;
 
@@ -22,6 +24,26 @@ bool SensorML;
 bool SensorM;
 bool SensorMR;
 bool SensorFR;
+
+int NUMBERS[] =
+{
+  0b1111110, // 0
+  0b0110000, // 1
+  0b1101101, // 2
+  0b1111001, // 3
+  0b0110011, // 4
+  0b1011011, // 5
+  0b1011111, // 6
+  0b1110000, // 7
+  0b1111111, // 8
+  0b1111011  // 9
+};
+
+int LETTERS[] =
+{
+    0b00001110, // L
+    0b11001110  // R
+};
 
 enum status {
   NIETS,
@@ -50,7 +72,23 @@ void setup() {
   display_setup();
 
   TCCR0B = 1;
-  Serial.begin(9600);
+  //Serial.begin(9600);
+
+  while(true)
+  {
+    for(int i = 0; i < 10; i++)
+    {
+      writeNumber(NUMBERS[i], false);
+      slaap(250);
+    }
+  }
+  writeNumber(LETTERS[1], false);
+}
+
+void slaap(unsigned long ms)
+{
+  unsigned long expirationTime = millis() + (ms * CONVERSIE);
+  while(expirationTime >= millis());
 }
 
 // FUNCTIES //
@@ -97,7 +135,7 @@ void detectState() {
   //     Serial.println(Status);
   // }
   
-  Serial.println(status);
+ // Serial.println(Status);
 }
 
 //// WIELEN ///
