@@ -1,14 +1,16 @@
 #define CONVERSIE 64
 
+// VARIABLES
+bool display = false;
+
+// motor variables
 int directionPin_L = 4;
 int pwmPin_L = 5;
-
 int directionPin_R = 7;
 int pwmPin_R = 6;
 
 bool direction_L;
 bool direction_R;
-
 int PK_R = 132;
 int PK_L = 132;
 
@@ -27,6 +29,7 @@ bool SensorFR;
 
 int junctions;
 
+// display
 int NUMBERS[] =
 {
   0b1111110, // 0
@@ -47,6 +50,7 @@ int LETTERS[] =
     0b1100110  // R
 };
 
+// status & tracking
 enum status {
   NIETS,
   VOORUIT,
@@ -57,6 +61,7 @@ enum status {
   correctieNaarLINKS
 };
 status Status;
+int junctions;
 
 void setup() {
   pinMode(directionPin_L, OUTPUT);
@@ -76,7 +81,7 @@ void setup() {
   TCCR0B = 1;
   //Serial.begin(9600);
 
-  while(true)
+  while(display)
   {
     for(int i = 0; i < 10; i++)
     {
@@ -92,14 +97,14 @@ void setup() {
   }
 }
 
+// FUNCTIES //
+//////////////
 void sleep(unsigned long ms)
 {
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
   while(expirationTime >= millis());
 }
 
-// FUNCTIES //
-//////////////
 void neutralise() {
   SensorFL = digitalRead(SensorFL_pin);
   SensorML = digitalRead(SensorML_pin);
@@ -141,8 +146,6 @@ void detectState() {
   //     Status = NIETS;
   //     Serial.println(Status);
   // }
-  
- // Serial.println(Status);
 }
 
 //// WIELEN ///
@@ -175,12 +178,12 @@ void Remmen(bool links, bool rechts) {
 void Vooruit(int timeout) {
   Linkerwiel_Vooruit();
   Rechterwiel_Vooruit();
-  delay(timeout);
+  sleep(timeout);
 }
 void Achteruit(int timeout) {
   Linkerwiel_Achteruit();
   Rechterwiel_Achteruit();
-  delay(timeout);
+  sleep(timeout);
 }
 
 void Linksaf(int timeout, bool checkSensor) {
@@ -271,14 +274,6 @@ void CheckVooruit(int richting, bool doorgaan) {
       digitalWrite(13, HIGH);
       while (true);
     }
-    // while (true) {
-    //   for (int i = 1; i < 10; i++) {
-    //   digitalWrite(13, HIGH);
-    //   delay(1000);
-    //   digitalWrite(13, HIGH);
-    //   delay(1000);
-    //   }
-    // }
   } else {
     if (Status == NIETS || !doorgaan) {
       Achteruit(350);
