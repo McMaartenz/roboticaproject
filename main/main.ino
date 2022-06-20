@@ -99,6 +99,13 @@ void setup() {
 
 // FUNCTIES //
 //////////////
+
+void updateDisplay()
+{
+  writeNumber(NUMBERS[junctions], true);
+  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false)
+}
+
 void sleep(unsigned long ms)
 {
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
