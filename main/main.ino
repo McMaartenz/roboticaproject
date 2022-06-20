@@ -113,12 +113,14 @@ void updateDisplay()
   int timeDifference = currentTime - displayTimer
   if (timeDifference < 1000) {
     // write number
-    if (!dispToggle) {
-      // write display 1
+    sprintf(x, "%d", junctions);
 
+    if (!dispToggle || junctions <= 9) {
+      // write display 1
+      writeNumber(NUMBERS[x[0] - '0']);
     } else {
       // write display 2
-
+      writeNumber(NUMBERS[x[1] - '0']);
     }
   } else if ((timeDifference > 1000) && (timeDifference < 2000)) {
     // write letter
@@ -127,7 +129,7 @@ void updateDisplay()
 
     } else {
       // write rechts
-
+      writeNumber(LETTERS[1]);
     }
   } else {
     // update timer
