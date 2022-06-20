@@ -100,16 +100,19 @@ void setup() {
 // FUNCTIES //
 //////////////
 
+bool dispToggle = false;
+
 void updateDisplay()
 {
-  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
-  writeNumber(NUMBERS[junctions], true);
-  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
-  writeNumber(NUMBERS[junctions], true);
-  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
-  writeNumber(NUMBERS[junctions], true);
-  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
-  writeNumber(NUMBERS[junctions], true);
+  dispToggle = !dispToggle;
+  if (dispToggle)
+  {
+    writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
+  }
+  else
+  {
+    writeNumber(NUMBERS[junctions], true);
+  }
 }
 
 void sleep(unsigned long ms)
