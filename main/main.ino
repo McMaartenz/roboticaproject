@@ -109,40 +109,14 @@ char x[2];
 
 void updateDisplay()
 {
-  if (showingMultiple)
-  {
-    multpToggle = !multpToggle;
-    if (multpToggle)
-    {
-      writeNumber(NUMBERS[x[0] - 48], true);
-    }
-    else
-    {
-      writeNumber(NUMBERS[x[1] - 48], false);
-      
-      showingMultiple = false;
-      dispToggle = false;
-    }
-    return;
-  }
-
   dispToggle = !dispToggle;
   if (dispToggle)
   {
-    writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
+    writeNumber(NUMBERS[junction], true);
   }
   else
   {
-    if (junctions <= 9)
-    {
-      writeNumber(NUMBERS[junctions], true);
-    }
-    else
-    {
-      showingMultiple = true;
-      multpToggle = false;
-      sprintf(x, "%d", junctions);
-    }
+    writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
   }
 }
 
