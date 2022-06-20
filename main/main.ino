@@ -79,6 +79,7 @@ void setup() {
   display_setup();
   junctions = 0;
   junctionTaken = false;
+  unsigned long displayTimer = 0;
 
   TCCR0B = 1;
   //Serial.begin(9600);
@@ -102,21 +103,35 @@ void setup() {
 // FUNCTIES //
 //////////////
 
-bool dispToggle = false;
-bool showingMultiple = false;
-bool multpToggle = false;
+bool dispToggle = true; // false = display 1 aan, true display 1 uit, 2 aan
 char x[2];
 
 void updateDisplay()
 {
-  dispToggle = !dispToggle;
-  if (dispToggle)
-  {
-    writeNumber(NUMBERS[junction], true);
-  }
-  else
-  {
-    writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
+  dispToggle = !dispToggle
+  unsigned long currentTime = millis();
+  int timeDifference = currentTime - displayTimer
+  if (timeDifference < 1000) {
+    // write number
+    if (!dispToggle) {
+      // write display 1
+
+    } else {
+      // write display 2
+
+    }
+  } else if ((timeDifference > 1000) && (timeDifference < 2000)) {
+    // write letter
+    if (!lastJunction) {
+      // write links
+
+    } else {
+      // write rechts
+
+    }
+  } else {
+    // update timer
+    displayTimer = currentTime;
   }
 }
 
@@ -170,7 +185,6 @@ void detectState() {
   //     Status = NIETS;
   //     Serial.println(Status);
   // }
-
   updateDisplay();
 }
 

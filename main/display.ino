@@ -43,11 +43,8 @@ void loop()
 }
 */
 
-void writeNumber(int toDisplay, boolean firstDisplay)
+void writeNumber(int toDisplay)
 {
-  digitalWrite(DISABLE1, firstDisplay);
-  digitalWrite(DISABLE2, !firstDisplay);
-
   digitalWrite(DA, (toDisplay >> 6) & 1); // Shift bits to get segment
   digitalWrite(DB, (toDisplay >> 5) & 1);
   digitalWrite(DC, (toDisplay >> 4) & 1);
