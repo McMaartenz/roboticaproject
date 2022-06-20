@@ -132,7 +132,7 @@ void sleep(unsigned long ms)
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
   while(expirationTime >= millis())
   {
-    updateDisplay();
+    // updateDisplay();
   }
 }
 
@@ -177,7 +177,7 @@ void detectState() {
   //     Status = NIETS;
   //     Serial.println(Status);
   // }
-  updateDisplay();
+  // updateDisplay();
 }
 
 //// WIELEN ///
