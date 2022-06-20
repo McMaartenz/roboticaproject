@@ -99,7 +99,9 @@ void updateDisplay()
   int timeDifference = currentTime - displayTimer;
   if (timeDifference < 1000) {
     // write number
+    digitalWrite(13, HIGH);
     sprintf(x, "%d", junctions);
+    digitalWrite(13, LOW);
 
     if (!dispToggle || junctions <= 9) {
       // write display 1
