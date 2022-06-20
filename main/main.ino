@@ -101,7 +101,9 @@ void updateDisplay()
   unsigned long timer2 = 128000;
   if (timeDifference < timer1) {
     // write number
+    digitalWrite(13, HIGH);
     sprintf(x, "%d", junctions);
+    digitalWrite(13, LOW);
 
     if (!dispToggle || junctions <= 9) {
       // write display 1
