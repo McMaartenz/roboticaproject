@@ -244,7 +244,7 @@ void Rechtsaf(int timeout, bool checkSensor) {
 void CorrectieRechts(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
-    while (!(Status == VOORUIT) || !(Status == bLINKS) || !(Status == bRECHTS) || millis() < turnTimeout) {
+    while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
       Remmen(false, true);
       Linkerwiel_Vooruit();
       detectState();
