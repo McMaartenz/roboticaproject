@@ -112,11 +112,11 @@ void updateDisplay()
     multpToggle = !multpToggle;
     if (multpToggle)
     {
-      writeNumber(NUMBERS[x[0]], true);
+      writeNumber(NUMBERS[x[0] - 48], true);
     }
     else
     {
-      writeNumber(NUMBERS[x[1]], false);
+      writeNumber(NUMBERS[x[1] - 48], false);
       
       showingMultiple = false;
       dispToggle = false;
