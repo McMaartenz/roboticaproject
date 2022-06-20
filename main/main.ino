@@ -1,7 +1,7 @@
 #define CONVERSIE 64
 
 // VARIABLES
-bool display = false;
+bool display = true;
 
 // motor variables
 int directionPin_L = 4;
