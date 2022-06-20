@@ -102,8 +102,14 @@ void setup() {
 
 void updateDisplay()
 {
+  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
   writeNumber(NUMBERS[junctions], true);
-  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false)
+  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
+  writeNumber(NUMBERS[junctions], true);
+  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
+  writeNumber(NUMBERS[junctions], true);
+  writeNumber(lastJunction ? LETTERS[1] : LETTERS[0], false);
+  writeNumber(NUMBERS[junctions], true);
 }
 
 void sleep(unsigned long ms)
