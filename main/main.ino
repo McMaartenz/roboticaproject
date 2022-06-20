@@ -62,6 +62,7 @@ status Status;
 int junctions;
 bool lastJunction; // true = rechts, false = links
 bool junctionTaken;
+unsigned long displayTimer;
 
 void setup() {
   pinMode(directionPin_L, OUTPUT);
@@ -79,25 +80,10 @@ void setup() {
   display_setup();
   junctions = 0;
   junctionTaken = false;
-  unsigned long displayTimer = 0;
+  displayTimer = 0;
 
   TCCR0B = 1;
   //Serial.begin(9600);
-
-  while(display)
-  {
-    for(int i = 0; i < 10; i++)
-    {
-      writeNumber(NUMBERS[i], false);
-      sleep(250);
-      writeNumber(NUMBERS[i], true);
-      sleep(250);
-    }
-    writeNumber(LETTERS[0], true);
-    sleep(1000);
-    writeNumber(LETTERS[1], false);
-    sleep(1000);
-  }
 }
 
 // FUNCTIES //
@@ -108,27 +94,31 @@ char x[2];
 
 void updateDisplay()
 {
-  dispToggle = !dispToggle
+  dispToggle = !dispToggle;
   unsigned long currentTime = millis();
-  int timeDifference = currentTime - displayTimer
+  int timeDifference = currentTime - displayTimer;
   if (timeDifference < 1000) {
     // write number
     sprintf(x, "%d", junctions);
 
     if (!dispToggle || junctions <= 9) {
       // write display 1
+      activateDisplay(1);
       writeNumber(NUMBERS[x[0] - '0']);
     } else {
       // write display 2
+      activateDisplay(2);
       writeNumber(NUMBERS[x[1] - '0']);
     }
   } else if ((timeDifference > 1000) && (timeDifference < 2000)) {
     // write letter
     if (!lastJunction) {
       // write links
-
+      activateDisplay(1);
+      writeNumber(LETTERS[0]);
     } else {
       // write rechts
+      activateDisplay(2);
       writeNumber(LETTERS[1]);
     }
   } else {
@@ -229,7 +219,6 @@ void Achteruit(int timeout) {
 }
 
 void Linksaf(int timeout, bool checkSensor) {
-  writeNumber(LETTERS[0], true);
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
       while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -247,7 +236,6 @@ void Linksaf(int timeout, bool checkSensor) {
   Remmen(true, true);
   junctionTaken = true;
   lastJunction = false;
-  clearDisplay(true);
 }
 void CorrectieLinks(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
@@ -268,7 +256,6 @@ void CorrectieLinks(int timeout, bool checkSensor) {
 }
 
 void Rechtsaf(int timeout, bool checkSensor) {
-  writeNumber(LETTERS[1], true);
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -286,7 +273,6 @@ void Rechtsaf(int timeout, bool checkSensor) {
   Remmen(true, true);
   junctionTaken = true;
   lastJunction = true;
-  clearDisplay(true);
 }
 
 void CorrectieRechts(int timeout, bool checkSensor) {

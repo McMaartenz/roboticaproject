@@ -24,24 +24,19 @@ void display_setup()
   pinMode(DISABLE2, OUTPUT);
 }
 
-/** DISPLAY LOOP
-void loop()
+void activateDisplay(int display)
 {
-  for (int i = 0; i <= 9 ; i++)
+  if (display == 1)
   {
-    unsigned long timeout_s = millis() + 500;
-    while(timeout_s > millis())
-    {
-      writeNumber(i, state);
-      if (timeout < millis())
-      {
-        timeout = millis() + 250;
-        state = !state;
-      }
-    }
+    digitalWrite(DISABLE1, LOW);
+    digitalWrite(DISABLE2, HIGH);
+  }
+  else
+  {
+    digitalWrite(DISABLE1, HIGH);
+    digitalWrite(DISABLE2, LOW);
   }
 }
-*/
 
 void writeNumber(int toDisplay)
 {
@@ -52,11 +47,6 @@ void writeNumber(int toDisplay)
   digitalWrite(DE, (toDisplay >> 2) & 1);
   digitalWrite(DF, (toDisplay >> 1) & 1);
   digitalWrite(DG, (toDisplay >> 0) & 1);
-}
-
-void clearDisplay(boolean firstDisplay)
-{
-    writeNumber(0, firstDisplay);
 }
 
 #endif
