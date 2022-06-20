@@ -125,7 +125,7 @@ void updateDisplay()
       activateDisplay(2);
       writeNumber(LETTERS[1]);
     }
-  } else {
+  } else if (timeDifference > timer2) {
     // update timer
     displayTimer = currentTime;
   }
@@ -136,7 +136,7 @@ void sleep(unsigned long ms)
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
   while(expirationTime >= millis())
   {
-    // updateDisplay();
+    updateDisplay();
   }
 }
 
