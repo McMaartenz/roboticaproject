@@ -206,11 +206,11 @@ void Linksaf(int timeout, bool checkSensor) {
 void CorrectieLinks(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
-      while (!(Status == VOORUIT) || !(Status == bLINKS) || !(Status == bRECHTS) || millis() < turnTimeout) {
-      Rechterwiel_Vooruit();
-      Remmen(true, false);
-      detectState;
-    }
+      while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
+        Rechterwiel_Vooruit();
+        Remmen(true, false);
+        detectState();
+      }
   } else {
     while (millis() < turnTimeout) {
       Rechterwiel_Vooruit();
