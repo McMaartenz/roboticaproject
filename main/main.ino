@@ -118,7 +118,10 @@ void updateDisplay()
 void sleep(unsigned long ms)
 {
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
-  while(expirationTime >= millis());
+  while(expirationTime >= millis())
+  {
+    updateDisplay();
+  }
 }
 
 void neutralise() {
