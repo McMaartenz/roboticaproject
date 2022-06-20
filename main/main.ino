@@ -61,6 +61,7 @@ enum status {
 status Status;
 int junctions;
 bool lastJunction; // true = rechts, false = links
+bool junctionTaken;
 
 void setup() {
   pinMode(directionPin_L, OUTPUT);
@@ -77,6 +78,7 @@ void setup() {
 
   display_setup();
   junctions = 0;
+  junctionTaken = false;
 
   TCCR0B = 1;
   //Serial.begin(9600);
@@ -221,7 +223,7 @@ void Linksaf(int timeout, bool checkSensor) {
     }
   }
   Remmen(true, true);
-  junctions++;
+  junctionTaken = true;
   lastJunction = false;
   clearDisplay(true);
 }
@@ -260,7 +262,7 @@ void Rechtsaf(int timeout, bool checkSensor) {
     }
   }
   Remmen(true, true);
-  junctions++;
+  junctionTaken = true;
   lastJunction = true;
   clearDisplay(true);
 }
@@ -309,7 +311,7 @@ void CheckVooruit(int richting, bool doorgaan) {
       }
     } else if (Status == VOORUIT) {
       Vooruit(50);
-      junctions++;
+      junctionTaken = true;
     }
   }
 }
@@ -324,6 +326,10 @@ void loop() {
   detectState();
   if (Status == VOORUIT) {
     milliTracker = currentMillis;
+    if (junctionTaken) {
+      junctionTaken = false;
+      junctions++;
+    }
     Vooruit(5);
   }
   else if (Status == bLINKS) {
