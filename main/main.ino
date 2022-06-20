@@ -153,6 +153,8 @@ void detectState() {
   //     Status = NIETS;
   //     Serial.println(Status);
   // }
+
+  updateDisplay();
 }
 
 //// WIELEN ///
