@@ -103,9 +103,29 @@ void setup() {
 //////////////
 
 bool dispToggle = false;
+bool showingMultiple = false;
+bool multpToggle = false;
+char x[2];
 
 void updateDisplay()
 {
+  if (showingMultiple)
+  {
+    multpToggle = !multpToggle;
+    if (multpToggle)
+    {
+      writeNumber(NUMBERS[x[0] - 48], true);
+    }
+    else
+    {
+      writeNumber(NUMBERS[x[1] - 48], false);
+      
+      showingMultiple = false;
+      dispToggle = false;
+    }
+    return;
+  }
+
   dispToggle = !dispToggle;
   if (dispToggle)
   {
@@ -113,14 +133,26 @@ void updateDisplay()
   }
   else
   {
-    writeNumber(NUMBERS[junctions], true);
+    if (junctions <= 9)
+    {
+      writeNumber(NUMBERS[junctions], true);
+    }
+    else
+    {
+      showingMultiple = true;
+      multpToggle = false;
+      sprintf(x, "%d", junctions);
+    }
   }
 }
 
 void sleep(unsigned long ms)
 {
   unsigned long expirationTime = millis() + (ms * CONVERSIE);
-  while(expirationTime >= millis());
+  while(expirationTime >= millis())
+  {
+    updateDisplay();
+  }
 }
 
 void neutralise() {
