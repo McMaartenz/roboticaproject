@@ -97,7 +97,9 @@ void updateDisplay()
   dispToggle = !dispToggle;
   unsigned long currentTime = millis();
   int timeDifference = currentTime - displayTimer;
-  if (timeDifference < 1000) {
+  unsigned long timer1 = 64000;
+  unsigned long timer2 = 128000;
+  if (timeDifference < timer1) {
     // write number
     sprintf(x, "%d", junctions);
 
@@ -110,7 +112,7 @@ void updateDisplay()
       activateDisplay(2);
       writeNumber(NUMBERS[x[1] - '0']);
     }
-  } else if ((timeDifference > 1000) && (timeDifference < 2000)) {
+  } else if ((timeDifference > timer1) && (timeDifference < timer2)) {
     // write letter
     if (!lastJunction) {
       // write links
@@ -177,7 +179,7 @@ void detectState() {
   //     Status = NIETS;
   //     Serial.println(Status);
   // }
-  // updateDisplay();
+  updateDisplay();
 }
 
 //// WIELEN ///

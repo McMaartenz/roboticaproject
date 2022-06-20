@@ -28,13 +28,13 @@ void activateDisplay(int display)
 {
   if (display == 1)
   {
-    digitalWrite(DISABLE1, LOW);
-    digitalWrite(DISABLE2, HIGH);
+    digitalWrite(DISABLE1, HIGH);
+    digitalWrite(DISABLE2, LOW);
   }
   else
   {
-    digitalWrite(DISABLE1, HIGH);
-    digitalWrite(DISABLE2, LOW);
+    digitalWrite(DISABLE1, LOW);
+    digitalWrite(DISABLE2, HIGH);
   }
 }
 
