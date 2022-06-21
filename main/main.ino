@@ -82,9 +82,10 @@ void setup() {
   junctions = 0;
   junctionTaken = false;
   displayTimer = 0;
+  multiplexTimer = 0;
 
   TCCR0B = 1;
-  //Serial.begin(9600);
+  Serial.begin(9600);
 }
 
 // FUNCTIES //
@@ -96,12 +97,9 @@ void updateDisplay()
 {
   unsigned long currentTime = (millis() / CONVERSIE);
   int timeDifference = currentTime - displayTimer;
-  if (timeDifference < 10 || junctions == 0) {
+  if (timeDifference < 1000 || junctions == 0) {
     // write number
-    digitalWrite(13, HIGH);
     sprintf(x, "%d", junctions);
-    digitalWrite(13, LOW);
-
     if (junctions <= 9) {
       // write display 1
       activateDisplay(1);
@@ -122,12 +120,12 @@ void updateDisplay()
         writeNumber(NUMBERS[x[1] - '0']);
       }
     }
-  } else if (timeDifference > 20) {
+  } else if (timeDifference > 2000) {
     // update timer
     displayTimer = currentTime;
-  } else if (timeDifference > 10) {
+  } else if (timeDifference > 1000) {
     // write letter
-    if (junctions) {
+    if (lastJunction) {
       // write rechts
       activateDisplay(2);
       writeNumber(LETTERS[1]);
@@ -382,5 +380,5 @@ void loop() {
   else if (Status == NIETS && ((currentMillis - milliTracker) > 500)) {
     CorrectieRechts(0, true);
   }
-
+  Serial.println(lastJunction);
 }
