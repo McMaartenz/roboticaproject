@@ -8,8 +8,8 @@
 #define DE  2
 #define DF 10
 #define DG  9
-#define DISABLE1 0
-#define DISABLE2 1
+#define DISABLE1 12
+#define DISABLE2 13
 
 void display_setup()
 {

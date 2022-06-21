@@ -63,6 +63,7 @@ int junctions;
 bool lastJunction; // true = rechts, false = links
 bool junctionTaken;
 unsigned long displayTimer;
+unsigned long multiplexTimer;
 
 void setup() {
   pinMode(directionPin_L, OUTPUT);
@@ -89,45 +90,52 @@ void setup() {
 // FUNCTIES //
 //////////////
 
-bool dispToggle = true; // false = display 1 aan, true display 1 uit, 2 aan
 char x[2];
 
 void updateDisplay()
 {
-  dispToggle = !dispToggle;
-  unsigned long currentTime = millis();
+  unsigned long currentTime = (millis() / CONVERSIE);
   int timeDifference = currentTime - displayTimer;
-  unsigned long timer1 = 64000;
-  unsigned long timer2 = 128000;
-  if (timeDifference < timer1) {
+  if (timeDifference < 10 || junctions == 0) {
     // write number
     digitalWrite(13, HIGH);
     sprintf(x, "%d", junctions);
     digitalWrite(13, LOW);
 
-    if (!dispToggle || junctions <= 9) {
+    if (junctions <= 9) {
       // write display 1
       activateDisplay(1);
       writeNumber(NUMBERS[x[0] - '0']);
     } else {
-      // write display 2
-      activateDisplay(2);
-      writeNumber(NUMBERS[x[1] - '0']);
-    }
-  } else if ((timeDifference > timer1) && (timeDifference < timer2)) {
-    // write letter
-    if (!lastJunction) {
-      // write links
+      // TWEE CIJFERS
+      int multiplexDifference = currentTime - multiplexTimer;
+      if (multiplexDifference < 10) {
+      // write display 1
       activateDisplay(1);
-      writeNumber(LETTERS[0]);
-    } else {
+      writeNumber(NUMBERS[x[0] - '0']);
+      } else if (multiplexDifference > 20) {
+      // update timer
+      multiplexTimer = currentTime;
+      } else if (multiplexDifference > 10) {
+        // write display 2
+        activateDisplay(2);
+        writeNumber(NUMBERS[x[1] - '0']);
+      }
+    }
+  } else if (timeDifference > 20) {
+    // update timer
+    displayTimer = currentTime;
+  } else if (timeDifference > 10) {
+    // write letter
+    if (junctions) {
       // write rechts
       activateDisplay(2);
       writeNumber(LETTERS[1]);
+    } else if (!lastJunction) {
+      // write links
+      activateDisplay(1);
+      writeNumber(LETTERS[0]);
     }
-  } else if (timeDifference > timer2) {
-    // update timer
-    displayTimer = currentTime;
   }
 }
 
@@ -317,8 +325,10 @@ void CheckVooruit(int richting, bool doorgaan) {
       Achteruit(200);
       Remmen(true, true);
       if (richting == 0) {
+        lastJunction = false;
         Linksaf(600, false);
       } else if (richting == 1) {
+        lastJunction = true;
         Rechtsaf(600, false);
       }
     } else if (Status == VOORUIT) {
