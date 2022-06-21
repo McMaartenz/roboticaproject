@@ -64,6 +64,7 @@ bool lastJunction; // true = rechts, false = links
 bool junctionTaken;
 unsigned long displayTimer;
 unsigned long multiplexTimer;
+bool programStarted;
 
 void setup() {
   pinMode(directionPin_L, OUTPUT);
@@ -81,6 +82,7 @@ void setup() {
   display_setup();
   junctions = 0;
   junctionTaken = false;
+  lastJunction = false;
   displayTimer = 0;
   multiplexTimer = 0;
 
@@ -97,7 +99,8 @@ void updateDisplay()
 {
   unsigned long currentTime = (millis() / CONVERSIE);
   int timeDifference = currentTime - displayTimer;
-  if (timeDifference < 1000 || junctions == 0) {
+  if (programStarted) {
+    if (timeDifference < 1000 || junctions == 0) {
     // write number
     sprintf(x, "%d", junctions);
     if (junctions <= 9) {
@@ -120,20 +123,29 @@ void updateDisplay()
         writeNumber(NUMBERS[x[1] - '0']);
       }
     }
-  } else if (timeDifference > 2000) {
-    // update timer
-    displayTimer = currentTime;
-  } else if (timeDifference > 1000) {
-    // write letter
-    if (lastJunction) {
-      // write rechts
-      activateDisplay(2);
-      writeNumber(LETTERS[1]);
-    } else if (!lastJunction) {
-      // write links
-      activateDisplay(1);
-      writeNumber(LETTERS[0]);
+    } else if (timeDifference > 2000) {
+      // update timer
+      displayTimer = currentTime;
+    } else if (timeDifference > 1000) {
+      // write letter
+      if (lastJunction) {
+        // write rechts
+        activateDisplay(2);
+        writeNumber(LETTERS[1]);
+      } else if (!lastJunction) {
+        // write links
+        activateDisplay(1);
+        writeNumber(LETTERS[0]);
+      }
     }
+  } else {
+    for (int i = 5; i > 0; i--) {
+      sprintf(x, "%d", i);
+      activateDisplay(1);
+      writeNumber(NUMBERS[x[0] - '0']);
+      delay(64000);
+      }
+  programStarted = true;
   }
 }
 
@@ -229,6 +241,7 @@ void Achteruit(int timeout) {
 }
 
 void Linksaf(int timeout, bool checkSensor) {
+  timeout = (timeout * 64);
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
       while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -266,6 +279,7 @@ void CorrectieLinks(int timeout, bool checkSensor) {
 }
 
 void Rechtsaf(int timeout, bool checkSensor) {
+  timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
@@ -314,20 +328,53 @@ void CheckVooruit(int richting, bool doorgaan) {
     Vooruit(200);
     Remmen(true, true);
     neutralise();
+    // robot detecteert eindblock na checken
     if (!SensorFL && !SensorML && !SensorM && !SensorMR && !SensorFR) {
-      digitalWrite(13, HIGH);
+      int i = 10;
+      unsigned long currentTime = (millis() / CONVERSIE);
+      unsigned long expirationTimer = currentTime;
+      while (i > -1) {
+        sprintf(x, "%d", i);
+        currentTime = (millis() / CONVERSIE);
+        int multiplexDifference = currentTime - multiplexTimer;
+        if (i <= 9) {
+          activateDisplay(1);
+          writeNumber(NUMBERS[x[0] - '0']);
+        } else {
+          if (multiplexDifference < 10) {
+          // write display 1
+          activateDisplay(1);
+          writeNumber(NUMBERS[x[0] - '0']);
+          } else if (multiplexDifference > 20) {
+          // update timer
+          multiplexTimer = currentTime;
+          } else if (multiplexDifference > 10) {
+            // write display 2
+            activateDisplay(2);
+            writeNumber(NUMBERS[x[1] - '0']);
+          }
+        }
+        if ((currentTime - expirationTimer) >= 1000) {
+        i--;
+        expirationTimer = currentTime;
+        }
+      }
       while (true);
     }
   } else {
-    if (Status == NIETS || !doorgaan) {
-      Achteruit(200);
+    // robot vind geen eindblock
+    if (Status == NIETS || doorgaan == false) {
+      Achteruit(100);
       Remmen(true, true);
-      if (richting == 0) {
-        lastJunction = false;
-        Linksaf(600, false);
-      } else if (richting == 1) {
-        lastJunction = true;
+      Serial.println("Check");
+      if (richting == 1) {
         Rechtsaf(600, false);
+        Serial.println(richting);
+      } else if (richting == 0) {
+        Linksaf(600, false);
+        Serial.println(richting);
+      } else {
+        Achteruit(1000);
       }
     } else if (Status == VOORUIT) {
       Vooruit(50);
@@ -354,12 +401,12 @@ void loop() {
   }
   else if (Status == bLINKS) {
     milliTracker = currentMillis;
-    delay(100);
+    delay(100 * CONVERSIE);
     CheckVooruit(0, false);
   }
   else if (Status == bRECHTS) {
     milliTracker = currentMillis;
-    delay(100);
+    delay(100 * CONVERSIE);
     CheckVooruit(1, true);
   }
   else if (Status == correctieNaarLINKS) {
@@ -380,5 +427,4 @@ void loop() {
   else if (Status == NIETS && ((currentMillis - milliTracker) > 500)) {
     CorrectieRechts(0, true);
   }
-  Serial.println(lastJunction);
 }
