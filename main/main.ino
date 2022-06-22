@@ -355,6 +355,7 @@ void CheckVooruit(int richting, bool doorgaan) {
       int i = 10;
       unsigned long currentTime = (millis() / CONVERSIE);
       unsigned long expirationTimer = currentTime;
+      multiplexTimer = currentTime;
       while (i > -1) {
         ///////////////
         // TEL NAAR 10
@@ -385,7 +386,23 @@ void CheckVooruit(int richting, bool doorgaan) {
         expirationTimer = currentTime;
         }
       }
-      while (true);
+      multiplexTimer = currentTime;
+      while (true) {
+        currentTime = (millis() / CONVERSIE);
+        int multiplexDifference = currentTime - multiplexTimer;
+          if (multiplexDifference < 10) {
+          // write display 1
+          activateDisplay(1);
+          writeNumber(LETTERS[2]);
+          } else if (multiplexDifference > 20) {
+          // update timer
+          multiplexTimer = currentTime;
+          } else if (multiplexDifference > 10) {
+            // write display 2
+            activateDisplay(2);
+            writeNumber(LETTERS[3]);
+          }
+      };
     }
   } else {
     // robot vind geen eindblock
