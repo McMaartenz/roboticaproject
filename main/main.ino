@@ -90,7 +90,7 @@ void setup() {
   displayTimer = 0;
   multiplexTimer = 0;
   deadEnd = false;
-  deadEndTimer = 0
+  deadEndTimer = 0;
 
   TCCR0B = 1;
 }
@@ -106,9 +106,10 @@ void updateDisplay()
   int timeDifference = currentTime - displayTimer;
   if (programStarted) {
     if (deadEnd) {
+      deadEndTimer = currentTime;
       if (currentTime - deadEndTimer < 2000) {
         // DEAD END
-        multiplexTimer = currentTime
+        multiplexTimer = currentTime;
         int multiplexDifference = currentTime - multiplexTimer;
         if (multiplexDifference < 10) {
         // write display 1
@@ -135,7 +136,7 @@ void updateDisplay()
         writeNumber(NUMBERS[x[0] - '0']);
       } else {
         // TWEE CIJFERS
-        multiplexTimer = currentTime
+        multiplexTimer = currentTime;
         int multiplexDifference = currentTime - multiplexTimer;
         if (multiplexDifference < 10) {
         // write display 1
