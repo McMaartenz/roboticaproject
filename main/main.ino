@@ -254,13 +254,16 @@ void Linksaf(int timeout, bool force) {
   timeout = (timeout * 64);
   unsigned long turnTimeout = millis() + timeout;
   if (force == true) {
-    while ((millis() < turnTimeout) || !(Status == VOORUIT)) {
+    while (millis() < turnTimeout) {
+      if (Status == VOORUIT) {
+        break;
+      }
       Rechterwiel_Vooruit();
       // Linkerwiel_Achteruit();
       detectState();
     }
   } else {
-    while ((millis() < turnTimeout) && (!(Status == VOORUIT) || !(Status == correctieNaarRECHTS) || !(Status == correctieNaarLINKS))) {
+    while ((millis() < turnTimeout) && (!(Status == VOORUIT) && !(Status == correctieNaarRECHTS) && !(Status == correctieNaarLINKS))) {
       Rechterwiel_Vooruit();
       // Linkerwiel_Achteruit();
       detectState();
@@ -292,13 +295,16 @@ void Rechtsaf(int timeout, bool force) {
   timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
   if (force == true) {
-    while ((millis() < turnTimeout) || !(Status == VOORUIT)) {
+    while (millis() < turnTimeout) {
+      if (Status == VOORUIT) {
+        break;
+      }
       Rechterwiel_Vooruit();
       // Linkerwiel_Achteruit();
       detectState();
     }
   } else {
-    while ((millis() < turnTimeout) && (!(Status == VOORUIT) || !(Status == correctieNaarRECHTS) || !(Status == correctieNaarLINKS))) {
+    while ((millis() < turnTimeout) && (!(Status == VOORUIT) && !(Status == correctieNaarRECHTS) && !(Status == correctieNaarLINKS))) {
       // Rechterwiel_Achteruit();
       Linkerwiel_Vooruit();
       detectState();
@@ -380,12 +386,14 @@ void CheckVooruit(int richting, bool doorgaan) {
     // vindt of geen baan of mag niet doorrijden (omdat bocht links aanwezig is)
     if (Status == NIETS || doorgaan == false) {
       sleep(100);
-      Achteruit(150);
+      Achteruit(200);
       Remmen(true, true);
       if (richting == 1) {
-        Rechtsaf(1200, true);
+        // Rechtsaf(1200, true);
+        Rechtsaf(800, false);
       } else if (richting == 0) {
-        Linksaf(1200, true);
+        // Linksaf(1200, true);
+        Linksaf(800, false);
       } else {
         Achteruit(1000);
       }
@@ -402,7 +410,7 @@ unsigned long milliTracker = 0;
 //// LOOP ////
 //////////////
 void loop() {
-  unsigned long currentMillis = millis();
+  unsigned long currentMillis = (millis() / 64);
   detectState();
   if (Status == VOORUIT) {
     milliTracker = currentMillis;
@@ -439,7 +447,7 @@ void loop() {
     delay(100);
     CheckVooruit(0, false);
   }
-  else if (Status == NIETS && ((currentMillis - milliTracker) > 500)) {
+  else if (Status == NIETS && ((currentMillis - milliTracker) > 250)) {
     VindPad(0, true);
   }
 }
