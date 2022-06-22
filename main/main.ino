@@ -274,6 +274,7 @@ void Linksaf(int timeout, bool force) {
   lastJunction = false;
 }
 void CorrectieLinks(int timeout, bool checkSensor) {
+  timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
       while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
@@ -316,6 +317,7 @@ void Rechtsaf(int timeout, bool force) {
 }
 
 void CorrectieRechts(int timeout, bool checkSensor) {
+  timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
@@ -386,14 +388,14 @@ void CheckVooruit(int richting, bool doorgaan) {
     // vindt of geen baan of mag niet doorrijden (omdat bocht links aanwezig is)
     if (Status == NIETS || doorgaan == false) {
       sleep(100);
-      Achteruit(200);
+      Achteruit(400);
       Remmen(true, true);
       if (richting == 1) {
-        // Rechtsaf(1200, true);
-        Rechtsaf(800, false);
+        Rechtsaf(1200, true);
+        // Rechtsaf(800, false);
       } else if (richting == 0) {
-        // Linksaf(1200, true);
-        Linksaf(800, false);
+        Linksaf(1200, true);
+        // Linksaf(800, false);
       } else {
         Achteruit(1000);
       }
