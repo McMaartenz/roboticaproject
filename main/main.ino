@@ -67,6 +67,8 @@ bool junctionTaken;
 unsigned long displayTimer;
 unsigned long multiplexTimer;
 bool programStarted;
+bool deadEnd;
+unsigned long deadEndTimer;
 
 void setup() {
   pinMode(directionPin_L, OUTPUT);
@@ -87,6 +89,8 @@ void setup() {
   lastJunction = false;
   displayTimer = 0;
   multiplexTimer = 0;
+  deadEnd = false;
+  deadEndTimer = 0
 
   TCCR0B = 1;
 }
@@ -101,42 +105,65 @@ void updateDisplay()
   unsigned long currentTime = (millis() / CONVERSIE);
   int timeDifference = currentTime - displayTimer;
   if (programStarted) {
-    if (timeDifference < 1000 || junctions == 0) {
-    // write number
-    sprintf(x, "%d", junctions);
-    if (junctions <= 9) {
-      // write display 1
-      activateDisplay(1);
-      writeNumber(NUMBERS[x[0] - '0']);
-    } else {
-      // TWEE CIJFERS
-      int multiplexDifference = currentTime - multiplexTimer;
-      if (multiplexDifference < 10) {
-      // write display 1
-      activateDisplay(1);
-      writeNumber(NUMBERS[x[0] - '0']);
-      } else if (multiplexDifference > 20) {
-      // update timer
-      multiplexTimer = currentTime;
-      } else if (multiplexDifference > 10) {
-        // write display 2
-        activateDisplay(2);
-        writeNumber(NUMBERS[x[1] - '0']);
-      }
-    }
-    } else if (timeDifference > 2000) {
-      // update timer
-      displayTimer = currentTime;
-    } else if (timeDifference > 1000) {
-      // write letter
-      if (lastJunction) {
-        // write rechts
-        activateDisplay(2);
-        writeNumber(LETTERS[1]);
-      } else if (!lastJunction) {
-        // write links
+    if (deadEnd) {
+      if (currentTime - deadEndTimer < 2000) {
+        // DEAD END
+        multiplexTimer = currentTime
+        int multiplexDifference = currentTime - multiplexTimer;
+        if (multiplexDifference < 10) {
+        // write display 1
         activateDisplay(1);
-        writeNumber(LETTERS[0]);
+        writeNumber(LETTERS[4]);
+        } else if (multiplexDifference > 20) {
+        // update timer
+        multiplexTimer = currentTime;
+        } else if (multiplexDifference > 10) {
+          // write display 2
+          activateDisplay(2);
+          writeNumber(LETTERS[5]);
+        }
+      } else {
+        deadEnd = false;
+      }
+    } else {
+      if (timeDifference < 1000 || junctions == 0) {
+      // write number
+      sprintf(x, "%d", junctions);
+      if (junctions <= 9) {
+        // write display 1
+        activateDisplay(1);
+        writeNumber(NUMBERS[x[0] - '0']);
+      } else {
+        // TWEE CIJFERS
+        multiplexTimer = currentTime
+        int multiplexDifference = currentTime - multiplexTimer;
+        if (multiplexDifference < 10) {
+        // write display 1
+        activateDisplay(1);
+        writeNumber(NUMBERS[x[0] - '0']);
+        } else if (multiplexDifference > 20) {
+        // update timer
+        multiplexTimer = currentTime;
+        } else if (multiplexDifference > 10) {
+          // write display 2
+          activateDisplay(2);
+          writeNumber(NUMBERS[x[1] - '0']);
+        }
+      }
+      } else if (timeDifference > 2000) {
+        // update timer
+        displayTimer = currentTime;
+      } else if (timeDifference > 1000) {
+        // write letter
+        if (lastJunction) {
+          // write rechts
+          activateDisplay(2);
+          writeNumber(LETTERS[1]);
+        } else if (!lastJunction) {
+          // write links
+          activateDisplay(1);
+          writeNumber(LETTERS[0]);
+        }
       }
     }
   } else {
@@ -469,6 +496,7 @@ void loop() {
     CheckVooruit(0, false);
   }
   else if (Status == NIETS && ((currentMillis - milliTracker) > 250)) {
+    deadEnd = true;
     VindPad(0, true);
   }
 }
