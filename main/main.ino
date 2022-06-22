@@ -64,7 +64,7 @@ enum status {
 };
 status Status;
 int junctions;
-bool lastJunction; // true = rechts, false = links
+int lastJunction; // 1 = links, 2 = rechts
 bool junctionTaken;
 unsigned long displayTimer;
 unsigned long multiplexTimer;
@@ -88,7 +88,7 @@ void setup() {
   display_setup();
   junctions = 0;
   junctionTaken = false;
-  lastJunction = false;
+  lastJunction = 0;
   displayTimer = 0;
   multiplexTimer = 0;
   deadEnd = false;
@@ -108,25 +108,22 @@ void updateDisplay()
   int timeDifference = currentTime - displayTimer;
   if (programStarted) {
     if (deadEnd) {
-      deadEndTimer = currentTime;
-      if (currentTime - deadEndTimer < 2000) {
-        // DEAD END
-        multiplexTimer = currentTime;
-        int multiplexDifference = currentTime - multiplexTimer;
-        if (multiplexDifference < 10) {
-        // write display 1
-        activateDisplay(1);
-        writeNumber(LETTERS[4]);
-        } else if (multiplexDifference > 20) {
-        // update timer
-        multiplexTimer = currentTime;
-        } else if (multiplexDifference > 10) {
-          // write display 2
-          activateDisplay(2);
-          writeNumber(LETTERS[5]);
-        }
-      } else {
-        deadEnd = false;
+      int multiplexDifference = currentTime - multiplexTimer;
+      // DEAD END DISPLAY
+      if (multiplexDifference < 5) {
+      // write display 1
+      activateDisplay(1);
+      writeNumber(LETTERS[4]);
+      } else if (multiplexDifference > 10) {
+      // update timer
+      multiplexTimer = currentTime;
+      } else if (multiplexDifference > 5) {
+        // write display 2
+        activateDisplay(2);
+        writeNumber(LETTERS[5]);
+      }
+      if (currentTime > deadEndTimer) {
+      deadEnd = false;
       }
     } else {
       if (timeDifference < 1000 || junctions == 0) {
@@ -138,7 +135,6 @@ void updateDisplay()
         writeNumber(NUMBERS[x[0] - '0']);
       } else {
         // TWEE CIJFERS
-        multiplexTimer = currentTime;
         int multiplexDifference = currentTime - multiplexTimer;
         if (multiplexDifference < 10) {
         // write display 1
@@ -158,14 +154,18 @@ void updateDisplay()
         displayTimer = currentTime;
       } else if (timeDifference > 1000) {
         // write letter
-        if (lastJunction) {
+        if (lastJunction == 2) {
           // write rechts
           activateDisplay(2);
           writeNumber(LETTERS[1]);
-        } else if (!lastJunction) {
+        } else if (lastJunction == 1) {
           // write links
           activateDisplay(1);
-          writeNumber(LETTERS[0]);
+          if (lastJunction == 2) {
+            writeNumber(LETTERS[1]);
+          } else {
+            writeNumber(LETTERS[0]);
+          } 
         }
       }
     }
@@ -238,22 +238,18 @@ void Linkerwiel_Vooruit() {
   digitalWrite(directionPin_L, HIGH);
   analogWrite(pwmPin_L, PK_L);
 }
-
 void Rechterwiel_Vooruit() {
   digitalWrite(directionPin_R, LOW);
   analogWrite(pwmPin_R, PK_R);
 }
-
 void Linkerwiel_Achteruit() {
   digitalWrite(directionPin_L, LOW);
   analogWrite(pwmPin_L, PK_L);
 }
-
 void Rechterwiel_Achteruit() {
   digitalWrite(directionPin_R, HIGH);
   analogWrite(pwmPin_R, PK_R);
 }
-
 void Remmen(bool links, bool rechts) {
   if (links) { analogWrite(pwmPin_L, 0); }
   if (rechts) { analogWrite(pwmPin_R, 0); }
@@ -303,7 +299,7 @@ void Linksaf(int timeout, bool force) {
   }
   Remmen(true, true);
   junctionTaken = true;
-  lastJunction = false;
+  lastJunction = 1;
 }
 void CorrectieLinks(int timeout, bool checkSensor) {
   timeout = timeout * 64;
@@ -311,13 +307,13 @@ void CorrectieLinks(int timeout, bool checkSensor) {
   if (checkSensor) {
       while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
         Rechterwiel_Vooruit();
-        Remmen(true, false);
+        // Remmen(true, false);
         detectState();
       }
   } else {
     while (millis() < turnTimeout) {
       Rechterwiel_Vooruit();
-      Remmen(true, false);
+      // Remmen(true, false);
       neutralise();
     }
   }
@@ -325,6 +321,7 @@ void CorrectieLinks(int timeout, bool checkSensor) {
 }
 
 void Rechtsaf(int timeout, bool force) {
+  lastJunction = 2;
   timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
   if (force == true) {
@@ -345,7 +342,7 @@ void Rechtsaf(int timeout, bool force) {
   }
   Remmen(true, true);
   junctionTaken = true;
-  lastJunction = true;
+  lastJunction = 2;
 }
 
 void CorrectieRechts(int timeout, bool checkSensor) {
@@ -353,13 +350,13 @@ void CorrectieRechts(int timeout, bool checkSensor) {
   unsigned long turnTimeout = millis() + timeout;
   if (checkSensor) {
     while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
-      Remmen(false, true);
+      // Remmen(false, true);
       Linkerwiel_Vooruit();
       detectState();
     }
   } else {
     while (millis() < turnTimeout) {
-      Remmen(false, true);
+      // Remmen(false, true);
       Linkerwiel_Vooruit();
       neutralise();
     }
@@ -485,21 +482,26 @@ void loop() {
   }
   else if (Status == correctieNaarLINKS) {
     milliTracker = currentMillis;
-    delay(100);
+    Remmen(true, true);
+    // delay(100);
     CorrectieLinks(100, true);
   }
   else if (Status == correctieNaarRECHTS) {
     milliTracker = currentMillis;
-    delay(100);
+    Remmen(true, true);
+    // delay(100);
     CorrectieRechts(100, true);
   }
   else if (Status == KRUISING) {
     milliTracker = currentMillis;
     delay(100);
+    Remmen(true, true);
     CheckVooruit(0, false);
   }
   else if (Status == NIETS && ((currentMillis - milliTracker) > 250)) {
+    unsigned long currentTime = (millis() / CONVERSIE);
     deadEnd = true;
+    deadEndTimer = currentTime + 2000;
     VindPad(0, true);
   }
 }
