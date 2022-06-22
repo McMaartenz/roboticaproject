@@ -45,7 +45,9 @@ int NUMBERS[] =
 int LETTERS[] =
 {
     0b0001110, // L
-    0b1100110  // R
+    0b1100110, // R
+    0b1000111, // F
+    0b0000110  // I
 };
 
 // status & tracking
