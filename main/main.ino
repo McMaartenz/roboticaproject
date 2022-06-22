@@ -62,6 +62,7 @@ enum status {
   correctieNaarRECHTS,
   correctieNaarLINKS
 };
+
 status Status;
 int junctions;
 bool lastJunction; // true = rechts, false = links
