@@ -87,7 +87,6 @@ void setup() {
   multiplexTimer = 0;
 
   TCCR0B = 1;
-  Serial.begin(9600);
 }
 
 // FUNCTIES //
@@ -240,20 +239,31 @@ void Achteruit(int timeout) {
   sleep(timeout);
 }
 
-void Linksaf(int timeout, bool checkSensor) {
-  timeout = (timeout * 64);
+void VindPad(int timeout, bool checkSensor) {
+  timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
-  if (checkSensor) {
-      while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
-        Rechterwiel_Vooruit();
-        Linkerwiel_Achteruit();
-        neutralise();
-      }
-  } else {
-    while (millis() < turnTimeout) {
+  while ((Status != VOORUIT && Status != bLINKS && Status != bRECHTS) || millis() < turnTimeout) {
       Rechterwiel_Vooruit();
       Linkerwiel_Achteruit();
-      neutralise();
+      detectState();
+  }
+  Remmen(true, true);
+}
+
+void Linksaf(int timeout, bool force) {
+  timeout = (timeout * 64);
+  unsigned long turnTimeout = millis() + timeout;
+  if (force == true) {
+    while ((millis() < turnTimeout) || !(Status == VOORUIT)) {
+      Rechterwiel_Vooruit();
+      // Linkerwiel_Achteruit();
+      detectState();
+    }
+  } else {
+    while ((millis() < turnTimeout) && (!(Status == VOORUIT) || !(Status == correctieNaarRECHTS) || !(Status == correctieNaarLINKS))) {
+      Rechterwiel_Vooruit();
+      // Linkerwiel_Achteruit();
+      detectState();
     }
   }
   Remmen(true, true);
@@ -278,20 +288,20 @@ void CorrectieLinks(int timeout, bool checkSensor) {
   Remmen(true, true);
 }
 
-void Rechtsaf(int timeout, bool checkSensor) {
+void Rechtsaf(int timeout, bool force) {
   timeout = timeout * 64;
   unsigned long turnTimeout = millis() + timeout;
-  if (checkSensor) {
-    while (!(SensorFL && SensorML && !SensorM && SensorMR && SensorFR) || millis() < turnTimeout) {
-      Rechterwiel_Achteruit();
-      Linkerwiel_Vooruit();
-      neutralise();
+  if (force == true) {
+    while ((millis() < turnTimeout) || !(Status == VOORUIT)) {
+      Rechterwiel_Vooruit();
+      // Linkerwiel_Achteruit();
+      detectState();
     }
   } else {
-    while (millis() < turnTimeout) {
-      Rechterwiel_Achteruit();
+    while ((millis() < turnTimeout) && (!(Status == VOORUIT) || !(Status == correctieNaarRECHTS) || !(Status == correctieNaarLINKS))) {
+      // Rechterwiel_Achteruit();
       Linkerwiel_Vooruit();
-      neutralise();
+      detectState();
     }
   }
   Remmen(true, true);
@@ -334,6 +344,8 @@ void CheckVooruit(int richting, bool doorgaan) {
       unsigned long currentTime = (millis() / CONVERSIE);
       unsigned long expirationTimer = currentTime;
       while (i > -1) {
+        ///////////////
+        // TEL NAAR 10
         sprintf(x, "%d", i);
         currentTime = (millis() / CONVERSIE);
         int multiplexDifference = currentTime - multiplexTimer;
@@ -353,6 +365,8 @@ void CheckVooruit(int richting, bool doorgaan) {
             activateDisplay(2);
             writeNumber(NUMBERS[x[1] - '0']);
           }
+          // TEL NAAR 10
+          //////////////
         }
         if ((currentTime - expirationTimer) >= 1000) {
         i--;
@@ -363,16 +377,15 @@ void CheckVooruit(int richting, bool doorgaan) {
     }
   } else {
     // robot vind geen eindblock
+    // vindt of geen baan of mag niet doorrijden (omdat bocht links aanwezig is)
     if (Status == NIETS || doorgaan == false) {
-      Achteruit(100);
+      sleep(100);
+      Achteruit(150);
       Remmen(true, true);
-      Serial.println("Check");
       if (richting == 1) {
-        Rechtsaf(600, false);
-        Serial.println(richting);
+        Rechtsaf(1200, true);
       } else if (richting == 0) {
-        Linksaf(600, false);
-        Serial.println(richting);
+        Linksaf(1200, true);
       } else {
         Achteruit(1000);
       }
@@ -402,11 +415,13 @@ void loop() {
   else if (Status == bLINKS) {
     milliTracker = currentMillis;
     delay(100 * CONVERSIE);
-    CheckVooruit(0, false);
+    Linksaf(1200, true);
+    // CheckVooruit(0, false);
   }
   else if (Status == bRECHTS) {
     milliTracker = currentMillis;
     delay(100 * CONVERSIE);
+    // Rechtsaf(1200, true);
     CheckVooruit(1, true);
   }
   else if (Status == correctieNaarLINKS) {
@@ -425,6 +440,6 @@ void loop() {
     CheckVooruit(0, false);
   }
   else if (Status == NIETS && ((currentMillis - milliTracker) > 500)) {
-    CorrectieRechts(0, true);
+    VindPad(0, true);
   }
 }
